@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SGA - Casa Áurea Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+        .day-card { min-height: 90px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; background: white; }
+        .task-pill { font-size: 0.6rem; padding: 2px 4px; margin-top: 2px; border-radius: 4px; border-left: 3px solid; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .task-axel { background: #e0f2fe; color: #0369a1; border-color: #0ea5e9; }
+        .task-edwin { background: #fef2f2; color: #991b1b; border-color: #ef4444; }
+        .task-jair { background: #f0fdf4; color: #166534; border-color: #22c55e; }
+        .is-done { opacity: 0.4; text-decoration: line-through; filter: grayscale(1); }
+        .tab-active { border-bottom: 4px solid #4f46e5; color: #4f46e5; font-weight: bold; }
+        @media (max-width: 640px) { .calendar-grid { gap: 1px; } .day-card { min-height: 60px; } }
+    </style>
+</head>
+<body class="bg-slate-100 pb-20 font-sans">
+
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
+            <h1 class="font-black text-indigo-900 tracking-tighter text-xl">CASA ÁUREA <span class="text-[10px] text-slate-400 block -mt-2 uppercase tracking-widest">Studio Ops</span></h1>
+            <div class="flex gap-2">
+                <button onclick="toggleAdmin()" id="adminBtn" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 transition">🔧 Admin</button>
+            </div>
+        </div>
+        <div class="flex bg-slate-50 border-t overflow-x-auto text-xs uppercase tracking-widest font-bold">
+            <button onclick="switchTab('calendar')" class="flex-1 py-3 px-4 tab-active" id="tab-calendar">Calendario</button>
+            <button onclick="switchTab('workload')" class="flex-1 py-3 px-4" id="tab-workload">Carga de Trabajo</button>
+            <button onclick="switchTab('clients')" class="flex-1 py-3 px-4" id="tab-clients">Clientes</button>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4">
+
+        <section id="view-calendar" class="space-y-4">
+            <div class="bg-white rounded-2xl shadow-sm border p-4">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="monthTitle" class="font-bold text-slate-700 uppercase">Marzo 2026</h3>
+                    <div class="flex gap-1">
+                        <button onclick="changeMonth(-1)" class="p-2 bg-slate-100 rounded-lg">←</button>
+                        <button onclick="changeMonth(1)" class="p-2 bg-slate-100 rounded-lg">→</button>
+                    </div>
+                </div>
+                <div class="calendar-grid text-center text-[10px] font-bold text-slate-400 mb-2 uppercase">
+                    <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
+                </div>
+                <div id="calendarContainer" class="calendar-grid"></div>
+            </div>
+        </section>
+
+        <section id="view-workload" class="hidden space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <div class="bg-sky-600 p-4 text-white flex justify-between items-center">
+                        <span class="font-bold uppercase tracking-widest">AXEL</span>
+                        <span id="count-Axel" class="bg-white text-sky-600 px-2 py-0.5 rounded-full text-xs font-black">0</span>
+                    </div>
+                    <div id="tasks-Axel" class="p-2 space-y-2 min-h-[200px] divide-y"></div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <div class="bg-red-600 p-4 text-white flex justify-between items-center">
+                        <span class="font-bold uppercase tracking-widest">EDWIN</span>
+                        <span id="count-Edwin" class="bg-white text-red-600 px-2 py-0.5 rounded-full text-xs font-black">0</span>
+                    </div>
+                    <div id="tasks-Edwin" class="p-2 space-y-2 min-h-[200px] divide-y"></div>
+                </div>
+                <div class="bg-white rounded-2xl shadow-sm border overflow-hidden">
+                    <div class="bg-green-600 p-4 text-white flex justify-between items-center">
+                        <span class="font-bold uppercase tracking-widest">JAIR</span>
+                        <span id="count-Jair" class="bg-white text-green-600 px-2 py-0.5 rounded-full text-xs font-black">0</span>
+                    </div>
+                    <div id="tasks-Jair" class="p-2 space-y-2 min-h-[200px] divide-y"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-clients" class="hidden space-y-4">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border">
+                <h3 class="font-bold text-indigo-900 mb-4 uppercase">Directorio de Clientes</h3>
+                <div class="flex gap-2 mb-6">
+                    <input type="text" id="newClientName" placeholder="Nombre del Cliente" class="flex-1 border rounded-lg px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-500">
+                    <button onclick="addClient()" class="bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-bold">Añadir</button>
+                </div>
+                <div id="clientsContainer" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
+            </div>
+        </section>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+        import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+        // CONFIGURACIÓN DE TU FIREBASE
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBkE788lWfe9EGv0AEHJtGPYlEOpb8VLI",
+            authDomain: "casa-aurea-cronograma.firebaseapp.com",
+            databaseURL: "https://casa-aurea-cronograma-default-rtdb.firebaseio.com",
+            projectId: "casa-aurea-cronograma",
+            storageBucket: "casa-aurea-cronograma.firebasestorage.app",
+            messagingSenderId: "454700891340",
+            appId: "1:454700891340:web:85309039ab9455488f1669"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // ESTADO GLOBAL
+        window.isAdmin = false;
+        let currentMonth = new Date().getMonth(); 
+        let currentYear = 2026;
+        let clients = {};
+        let tasks = {};
+
+        // INICIALIZACIÓN
+        onValue(ref(db, 'casa_aurea/config/clients'), (snap) => {
+            clients = snap.val() || {};
+            renderClients();
+        });
+
+        onValue(ref(db, 'casa_aurea/tasks'), (snap) => {
+            tasks = snap.val() || {};
+            renderCalendar();
+            renderWorkload();
+        });
+
+        // FUNCIONES DE NAVEGACIÓN
+        window.switchTab = (tab) => {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+        };
+
+        window.toggleAdmin = () => {
+            if (!window.isAdmin) {
+                const pass = prompt("Acceso Administrador:");
+                if (pass === "aurea2026") {
+                    window.isAdmin = true;
+                    document.getElementById('adminBtn').innerText = "🔓 Admin ON";
+                    document.getElementById('adminBtn').classList.replace('bg-slate-800', 'bg-indigo-600');
+                } else { alert("Incorrecto"); }
+            } else {
+                window.isAdmin = false;
+                document.getElementById('adminBtn').innerText = "🔧 Admin";
+                document.getElementById('adminBtn').classList.replace('bg-indigo-600', 'bg-slate-800');
+            }
+            renderCalendar(); renderWorkload(); renderClients();
+        };
+
+        // GESTIÓN DE CLIENTES
+        window.addClient = () => {
+            if (!window.isAdmin) return alert("Solo administrador");
+            const name = document.getElementById('newClientName').value;
+            if (name) {
+                push(ref(db, 'casa_aurea/config/clients'), { name });
+                document.getElementById('newClientName').value = '';
+            }
+        };
+
+        function renderClients() {
+            const container = document.getElementById('clientsContainer');
+            container.innerHTML = '';
+            Object.entries(clients).forEach(([id, c]) => {
+                container.innerHTML += `
+                    <div class="bg-indigo-50 p-3 rounded-xl border border-indigo-100 flex justify-between items-center">
+                        <span class="text-xs font-bold text-indigo-700 uppercase">${c.name}</span>
+                        ${window.isAdmin ? `<button onclick="window.deleteClient('${id}')" class="text-red-400">×</button>` : ''}
+                    </div>`;
+            });
+        }
+        window.deleteClient = (id) => { if(confirm("¿Borrar cliente?")) remove(ref(db, `casa_aurea/config/clients/${id}`)); };
+
+        // GESTIÓN DE CALENDARIO
+        function renderCalendar() {
+            const container = document.getElementById('calendarContainer');
+            container.innerHTML = '';
+            const months = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+            document.getElementById('monthTitle').innerText = `${months[currentMonth]} ${currentYear}`;
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) container.innerHTML += `<div class="day-card bg-slate-50/50"></div>`;
+
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'day-card p-1 text-[10px]';
+                
+                let dayTasks = "";
+                Object.entries(tasks).forEach(([id, t]) => {
+                    if (dateKey >= t.start && dateKey <= t.end) {
+                        dayTasks += `<div class="task-pill task-${t.assigned.toLowerCase()} ${t.done ? 'is-done' : ''}">${t.text}</div>`;
+                    }
+                });
+
+                dayDiv.innerHTML = `<span class="font-bold text-slate-400">${day}</span>${dayTasks}`;
+                dayDiv.onclick = () => { if(window.isAdmin) window.createTask(dateKey); };
+                container.appendChild(dayDiv);
+            }
+        }
+
+        window.createTask = (date) => {
+            const clientList = Object.entries(clients).map(([id, c]) => `${id}: ${c.name}`).join("\n");
+            const clientId = prompt(`ID del Cliente para esta tarea:\n${clientList}`);
+            if (!clients[clientId]) return alert("ID inválido");
+
+            const title = prompt("Título de la tarea:");
+            const assigned = prompt("Asignar a (Axel, Edwin, Jair):");
+            const endDay = prompt("¿Qué día termina? (DD):", date.split('-')[2]);
+            const endDate = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${endDay.padStart(2, '0')}`;
+
+            if (title && assigned) {
+                push(ref(db, 'casa_aurea/tasks'), {
+                    text: title,
+                    client: clients[clientId].name,
+                    assigned: assigned,
+                    start: date,
+                    end: endDate,
+                    done: false
+                });
+            }
+        };
+
+        // CARGA DE TRABAJO
+        window.renderWorkload = () => {
+            const users = ["Axel", "Edwin", "Jair"];
+            users.forEach(u => {
+                const list = document.getElementById(`tasks-${u}`);
+                const countEl = document.getElementById(`count-${u}`);
+                list.innerHTML = '';
+                let count = 0;
+
+                Object.entries(tasks).forEach(([id, t]) => {
+                    if (t.assigned.toLowerCase() === u.toLowerCase() && !t.done) {
+                        count++;
+                        list.innerHTML += `
+                            <div class="py-3 flex justify-between items-center group">
+                                <div class="flex-1">
+                                    <span class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">${t.client}</span>
+                                    <h4 class="text-xs font-bold text-slate-700 leading-tight">${t.text}</h4>
+                                    <p class="text-[9px] text-slate-400">Hasta: ${t.end}</p>
+                                </div>
+                                <div class="flex gap-2">
+                                    <button onclick="window.toggleTask('${id}', false)" class="bg-indigo-50 text-indigo-600 p-2 rounded-lg text-xs font-bold">✓</button>
+                                    ${window.isAdmin ? `<button onclick="window.deleteTask('${id}')" class="text-red-300 group-hover:text-red-500">×</button>` : ''}
+                                </div>
+                            </div>`;
+                    }
+                });
+                countEl.innerText = count;
+                if (count === 0) list.innerHTML = '<p class="text-[10px] text-center p-4 text-slate-300 italic">Sin tareas pendientes</p>';
+            });
+        };
+
+        window.toggleTask = (id, currentStatus) => {
+            update(ref(db, `casa_aurea/tasks/${id}`), { done: !currentStatus });
+        };
+
+        window.deleteTask = (id) => {
+            if(confirm("¿Eliminar tarea definitivamente?")) remove(ref(db, `casa_aurea/tasks/${id}`));
+        };
+
+        window.changeMonth = (dir) => {
+            currentMonth += dir;
+            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+            renderCalendar();
+        };
+
+    </script>
+</body>
+</html>
