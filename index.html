@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Dashboard Ops - Casa Áurea</title>
+    <title>SGA - Casa Áurea Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -19,50 +19,48 @@
         #taskModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 100; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
     </style>
 </head>
-<body class="bg-slate-100 pb-20 font-sans text-slate-900">
+<body class="bg-slate-50 pb-20 font-sans text-slate-900">
 
     <div id="taskModal">
         <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-200">
-            <h3 class="font-black text-indigo-900 mb-6 uppercase tracking-tighter text-xl">Nueva Actividad</h3>
+            <h3 class="font-black text-indigo-900 mb-6 uppercase tracking-tighter text-xl">Nueva Entrega</h3>
             <div class="space-y-4">
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Proyecto / Cliente</label>
-                    <select id="taskClient" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm focus:border-indigo-500 outline-none"></select>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Cliente</label>
+                    <select id="taskClient" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm outline-none"></select>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">¿Qué hay que hacer?</label>
-                    <input type="text" id="taskTitle" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm focus:border-indigo-500 outline-none" placeholder="Ej: Editar Reels">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Actividad</label>
+                    <input type="text" id="taskTitle" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm outline-none" placeholder="Ej: Postales Tatiz">
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Responsable</label>
-                        <select id="taskAssigned" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm outline-none">
+                        <select id="taskAssigned" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm">
                             <option value="Axel">Axel</option>
                             <option value="Edwin">Edwin</option>
                             <option value="Jair">Jair</option>
                         </select>
                     </div>
                     <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Día de Fin</label>
+                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Día Fin</label>
                         <input type="number" id="taskEndDay" class="w-full border-2 border-slate-100 rounded-xl p-3 text-sm" min="1" max="31">
                     </div>
                 </div>
-                <div class="flex gap-2 pt-4">
-                    <button onclick="saveTask()" class="flex-1 bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 active:scale-95 transition">Guardar</button>
-                    <button onclick="closeModal()" class="flex-1 bg-slate-100 text-slate-500 py-4 rounded-2xl font-bold active:scale-95 transition">Cerrar</button>
-                </div>
+                <button onclick="saveTask()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold">Guardar</button>
+                <button onclick="closeModal()" class="w-full text-slate-400 text-xs font-bold py-2">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <nav class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 border-b">
+    <nav class="bg-white shadow-sm sticky top-0 z-50 border-b">
         <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
-            <h1 class="font-black text-indigo-900 tracking-tighter text-xl uppercase">Casa Áurea</h1>
-            <button onclick="toggleAdmin()" id="adminBtn" class="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black tracking-widest transition shadow-md active:scale-90 uppercase">🔧 Admin</button>
+            <h1 class="font-black text-indigo-900 tracking-tighter text-xl uppercase leading-none">Casa Áurea</h1>
+            <button onclick="toggleAdmin()" id="adminBtn" class="bg-slate-900 text-white px-4 py-2 rounded-full text-[10px] font-black tracking-widest uppercase">🔧 Staff</button>
         </div>
-        <div class="flex bg-white overflow-x-auto text-[10px] uppercase tracking-widest font-bold border-t">
+        <div id="mainTabs" class="flex bg-white overflow-x-auto text-[10px] uppercase tracking-widest font-bold border-t">
             <button onclick="switchTab('calendar')" class="flex-1 py-4 px-2 tab-active" id="tab-calendar">Calendario</button>
-            <button onclick="switchTab('workload')" class="flex-1 py-4 px-2" id="tab-workload">Estadísticas</button>
+            <button onclick="switchTab('workload')" class="flex-1 py-4 px-2" id="tab-workload">Carga / Stats</button>
             <button onclick="switchTab('clients')" class="flex-1 py-4 px-2" id="tab-clients">Clientes</button>
         </div>
     </nav>
@@ -70,16 +68,16 @@
     <main class="max-w-6xl mx-auto p-4">
         
         <section id="view-calendar">
-            <div class="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-4">
+            <div class="bg-white rounded-3xl shadow-xl border border-slate-100 p-4">
                 <div class="flex justify-between items-center mb-6">
-                    <h3 id="monthTitle" class="font-black text-indigo-900 uppercase text-sm tracking-widest"></h3>
+                    <h3 id="monthTitle" class="font-black text-indigo-900 uppercase text-sm"></h3>
                     <div class="flex gap-2">
-                        <button onclick="changeMonth(-1)" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center font-bold">←</button>
-                        <button onclick="changeMonth(1)" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center font-bold">→</button>
+                        <button onclick="changeMonth(-1)" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center">←</button>
+                        <button onclick="changeMonth(1)" class="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center">→</button>
                     </div>
                 </div>
                 <div class="calendar-grid text-center text-[9px] font-black text-slate-300 mb-2 uppercase">
-                    <div>Dom</div><div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div>
+                    <div>D</div><div>L</div><div>M</div><div>M</div><div>J</div><div>V</div><div>S</div>
                 </div>
                 <div id="calendarContainer" class="calendar-grid"></div>
             </div>
@@ -87,49 +85,24 @@
 
         <section id="view-workload" class="hidden space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Carga por Equipo</h4>
-                    <canvas id="chartTeam" height="200"></canvas>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                    <h4 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Distribución por Cliente</h4>
-                    <canvas id="chartClients" height="200"></canvas>
-                </div>
+                <div class="bg-white p-4 rounded-3xl border"><canvas id="chartTeam" height="200"></canvas></div>
+                <div class="bg-white p-4 rounded-3xl border"><canvas id="chartClients" height="200"></canvas></div>
             </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="workloadGrid">
-                <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                    <div class="bg-sky-500 p-4 text-white flex justify-between items-center">
-                        <span class="font-black text-xs">AXEL</span>
-                        <span id="count-Axel" class="bg-white text-sky-500 px-3 py-1 rounded-full text-[10px] font-black">0</span>
-                    </div>
-                    <div id="tasks-Axel" class="p-3 space-y-2 min-h-[100px] divide-y divide-slate-50"></div>
-                </div>
-                <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                    <div class="bg-rose-500 p-4 text-white flex justify-between items-center">
-                        <span class="font-black text-xs">EDWIN</span>
-                        <span id="count-Edwin" class="bg-white text-rose-500 px-3 py-1 rounded-full text-[10px] font-black">0</span>
-                    </div>
-                    <div id="tasks-Edwin" class="p-3 space-y-2 min-h-[100px] divide-y divide-slate-50"></div>
-                </div>
-                <div class="bg-white rounded-3xl shadow-sm border overflow-hidden">
-                    <div class="bg-emerald-500 p-4 text-white flex justify-between items-center">
-                        <span class="font-black text-xs">JAIR</span>
-                        <span id="count-Jair" class="bg-white text-emerald-500 px-3 py-1 rounded-full text-[10px] font-black">0</span>
-                    </div>
-                    <div id="tasks-Jair" class="p-3 space-y-2 min-h-[100px] divide-y divide-slate-50"></div>
-                </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-white rounded-2xl border overflow-hidden"><div class="bg-sky-500 p-3 text-white font-bold text-xs uppercase">Axel</div><div id="tasks-Axel" class="p-2 divide-y"></div></div>
+                <div class="bg-white rounded-2xl border overflow-hidden"><div class="bg-rose-500 p-3 text-white font-bold text-xs uppercase">Edwin</div><div id="tasks-Edwin" class="p-2 divide-y"></div></div>
+                <div class="bg-white rounded-2xl border overflow-hidden"><div class="bg-emerald-500 p-3 text-white font-bold text-xs uppercase">Jair</div><div id="tasks-Jair" class="p-2 divide-y"></div></div>
             </div>
         </section>
 
         <section id="view-clients" class="hidden">
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-                <h3 class="font-black text-indigo-900 mb-6 uppercase text-xs tracking-widest">Directorio de Clientes</h3>
+            <div class="bg-white rounded-3xl p-6 border shadow-sm">
+                <h3 class="font-black text-indigo-900 mb-6 uppercase text-xs tracking-widest">Panel de Clientes</h3>
                 <div class="flex gap-3 mb-8">
-                    <input type="text" id="newClientName" placeholder="Nombre" class="flex-1 border-2 border-slate-50 rounded-xl px-4 py-3 text-sm outline-none focus:border-indigo-500">
-                    <button onclick="addClient()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-lg shadow-indigo-100">Añadir</button>
+                    <input type="text" id="newClientName" placeholder="Nombre" class="flex-1 border rounded-xl px-4 py-3 text-sm">
+                    <button onclick="addClient()" class="bg-indigo-600 text-white px-6 py-3 rounded-xl text-sm font-bold">Añadir</button>
                 </div>
-                <div id="clientsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                <div id="clientsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </div>
         </section>
     </main>
@@ -159,6 +132,7 @@
         let activeDate = "";
         let chartTeam, chartClients;
 
+        // Escuchas de Firebase
         onValue(ref(db, 'casa_aurea/config/clients'), (snap) => {
             clients = snap.val() || {};
             const select = document.getElementById('taskClient');
@@ -174,65 +148,7 @@
             updateCharts();
         });
 
-        window.switchTab = (tab) => {
-            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-            document.querySelectorAll('nav .flex button').forEach(b => b.classList.remove('tab-active'));
-            document.getElementById(`tab-${tab}`).classList.add('tab-active');
-            if (tab === 'workload') updateCharts(); // Forzar redibujado de gráficos
-        };
-
-        window.toggleAdmin = () => {
-            if (!window.isAdmin) {
-                const pass = prompt("Clave Casa Áurea:");
-                if (pass === "aurea2026") window.isAdmin = true;
-            } else window.isAdmin = false;
-            document.getElementById('adminBtn').innerText = window.isAdmin ? "🔓 Admin ON" : "🔧 Admin";
-            renderCalendar(); renderWorkload(); renderClients();
-        };
-
-        window.createTask = (date) => {
-            if (!window.isAdmin) return;
-            activeDate = date;
-            document.getElementById('taskEndDay').value = date.split('-')[2];
-            document.getElementById('taskModal').style.display = 'flex';
-        };
-
-        window.closeModal = () => document.getElementById('taskModal').style.display = 'none';
-
-        window.saveTask = () => {
-            const title = document.getElementById('taskTitle').value;
-            const clientId = document.getElementById('taskClient').value;
-            const assigned = document.getElementById('taskAssigned').value;
-            const endDay = document.getElementById('taskEndDay').value;
-            const endDate = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${endDay.padStart(2, '0')}`;
-            if (title && clientId) {
-                push(ref(db, 'casa_aurea/tasks'), {
-                    text: title, client: clients[clientId].name, assigned: assigned,
-                    start: activeDate, end: endDate, done: false
-                });
-                closeModal(); document.getElementById('taskTitle').value = '';
-            }
-        };
-
-        window.addClient = () => {
-            const name = document.getElementById('newClientName').value;
-            if (name && window.isAdmin) {
-                push(ref(db, 'casa_aurea/config/clients'), { name });
-                document.getElementById('newClientName').value = '';
-            }
-        };
-
-        function renderClients() {
-            const container = document.getElementById('clientsContainer');
-            container.innerHTML = '';
-            Object.entries(clients).forEach(([id, c]) => {
-                container.innerHTML += `<div class="bg-indigo-50/50 p-4 rounded-2xl border border-indigo-100 flex justify-between items-center"><span class="text-[10px] font-black text-indigo-700 uppercase tracking-widest">${c.name}</span>${window.isAdmin ? `<button onclick="window.deleteClient('${id}')" class="text-rose-400 font-bold">BORRAR</button>` : ''}</div>`;
-            });
-        }
-
-        window.deleteClient = (id) => { if(confirm("¿Eliminar cliente?")) remove(ref(db, `casa_aurea/config/clients/${id}`)); };
-
+        // FUNCIONES CORE
         function renderCalendar() {
             const container = document.getElementById('calendarContainer');
             container.innerHTML = '';
@@ -240,7 +156,9 @@
             document.getElementById('monthTitle').innerText = `${months[currentMonth]} ${currentYear}`;
             const firstDay = new Date(currentYear, currentMonth, 1).getDay();
             const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-            for (let i = 0; i < firstDay; i++) container.innerHTML += `<div class="day-card bg-slate-50/20 border-none"></div>`;
+
+            for (let i = 0; i < firstDay; i++) container.innerHTML += `<div class="day-card bg-slate-50/30 border-none"></div>`;
+
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateKey = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
                 const dayDiv = document.createElement('div');
@@ -252,74 +170,78 @@
                     }
                 });
                 dayDiv.innerHTML = `<span class="font-black text-slate-300 text-[9px] mb-1">${day}</span><div class="flex-1 overflow-hidden">${dayTasks}</div>`;
-                dayDiv.onclick = () => { if(window.isAdmin) window.createTask(dateKey); };
+                if(window.isAdmin) dayDiv.onclick = () => { activeDate = dateKey; document.getElementById('taskEndDay').value = day; document.getElementById('taskModal').style.display='flex'; };
                 container.appendChild(dayDiv);
             }
         }
 
+        window.renderClients = () => {
+            const container = document.getElementById('clientsContainer');
+            if(!container) return;
+            container.innerHTML = '';
+            Object.entries(clients).forEach(([id, c]) => {
+                const slug = c.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+                const link = `${window.location.origin}${window.location.pathname.replace('index.html', '')}cliente.html?n=${slug}&id=${id}`;
+                container.innerHTML += `
+                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                        <div class="flex justify-between items-center mb-2"><span class="text-[10px] font-black uppercase text-indigo-900">${c.name}</span><button onclick="window.deleteClient('${id}')" class="text-rose-400 text-xs font-bold">×</button></div>
+                        <input readonly value="${link}" class="w-full text-[8px] bg-slate-50 p-2 rounded mb-2 font-mono">
+                        <button onclick="navigator.clipboard.writeText('${link}');alert('Link copiado')" class="w-full bg-slate-800 text-white text-[9px] py-2 rounded-lg font-bold">COPIAR LINK PERSONALIZADO</button>
+                    </div>`;
+            });
+        };
+
+        window.saveTask = () => {
+            const title = document.getElementById('taskTitle').value;
+            const clientId = document.getElementById('taskClient').value;
+            const assigned = document.getElementById('taskAssigned').value;
+            const endDay = document.getElementById('taskEndDay').value;
+            const endDate = `${currentYear}-${(currentMonth + 1).toString().padStart(2, '0')}-${endDay.padStart(2, '0')}`;
+            if (title && clientId) {
+                push(ref(db, 'casa_aurea/tasks'), { text: title, client: clients[clientId].name, clientId: clientId, assigned: assigned, start: activeDate, end: endDate, done: false });
+                closeModal();
+            }
+        };
+
         function updateCharts() {
-            const teamCounts = { Axel: 0, Edwin: 0, Jair: 0 };
-            const clientCounts = {};
-            
-            Object.values(tasks).forEach(t => {
-                if (!t.done) {
-                    teamCounts[t.assigned]++;
-                    clientCounts[t.client] = (clientCounts[t.client] || 0) + 1;
-                }
-            });
-
-            const ctx1 = document.getElementById('chartTeam').getContext('2d');
-            if (chartTeam) chartTeam.destroy();
-            chartTeam = new Chart(ctx1, {
-                type: 'bar',
-                data: {
-                    labels: ['Axel', 'Edwin', 'Jair'],
-                    datasets: [{
-                        label: 'Tareas Pendientes',
-                        data: [teamCounts.Axel, teamCounts.Edwin, teamCounts.Jair],
-                        backgroundColor: ['#0ea5e9', '#f43f5e', '#10b981'],
-                        borderRadius: 8
-                    }]
-                },
-                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
-            });
-
-            const ctx2 = document.getElementById('chartClients').getContext('2d');
-            if (chartClients) chartClients.destroy();
-            chartClients = new Chart(ctx2, {
-                type: 'doughnut',
-                data: {
-                    labels: Object.keys(clientCounts),
-                    datasets: [{
-                        data: Object.values(clientCounts),
-                        backgroundColor: ['#6366f1', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4'],
-                        borderWidth: 0
-                    }]
-                },
-                options: { plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }, cutout: '70%' }
-            });
+            const tC = { Axel: 0, Edwin: 0, Jair: 0 };
+            const cC = {};
+            Object.values(tasks).forEach(t => { if (!t.done) { tC[t.assigned]++; cC[t.client] = (cC[t.client] || 0) + 1; } });
+            if(chartTeam) chartTeam.destroy();
+            chartTeam = new Chart(document.getElementById('chartTeam'), { type: 'bar', data: { labels: ['Axel', 'Edwin', 'Jair'], datasets: [{ label: 'Pendientes', data: [tC.Axel, tC.Edwin, tC.Jair], backgroundColor: ['#0ea5e9', '#f43f5e', '#10b981'] }] }, options: { plugins: { legend: false } } });
+            if(chartClients) chartClients.destroy();
+            chartClients = new Chart(document.getElementById('chartClients'), { type: 'doughnut', data: { labels: Object.keys(cC), datasets: [{ data: Object.values(cC), backgroundColor: ['#6366f1', '#f59e0b', '#ec4899'] }] }, options: { cutout: '70%' } });
         }
 
         window.renderWorkload = () => {
             ["Axel", "Edwin", "Jair"].forEach(u => {
                 const list = document.getElementById(`tasks-${u}`);
-                const countEl = document.getElementById(`count-${u}`);
                 list.innerHTML = '';
-                let count = 0;
                 Object.entries(tasks).forEach(([id, t]) => {
                     if (t.assigned.toLowerCase() === u.toLowerCase() && !t.done) {
-                        count++;
-                        list.innerHTML += `<div class="py-3 flex justify-between items-center"><div class="flex-1 overflow-hidden"><span class="text-[8px] font-black text-indigo-400 uppercase tracking-tighter">${t.client}</span><h4 class="text-[11px] font-bold text-slate-700 truncate leading-tight">${t.text}</h4></div><div class="flex gap-2"><button onclick="window.toggleTask('${id}', false)" class="bg-indigo-600 text-white px-3 py-1.5 rounded-xl text-[10px] font-black shadow-lg shadow-indigo-100">LISTO</button>${window.isAdmin ? `<button onclick="window.deleteTask('${id}')" class="text-rose-300 font-bold px-2">×</button>` : ''}</div></div>`;
+                        list.innerHTML += `<div class="py-2 flex justify-between items-center"><div class="flex-1 overflow-hidden"><span class="text-[7px] font-black text-indigo-400 uppercase">${t.client}</span><h4 class="text-[10px] font-bold text-slate-700 truncate">${t.text}</h4></div><button onclick="window.toggleTask('${id}', false)" class="bg-indigo-600 text-white px-2 py-1 rounded text-[9px] font-bold">✓</button></div>`;
                     }
                 });
-                countEl.innerText = count;
             });
         };
 
-        window.toggleTask = (id, currentStatus) => update(ref(db, `casa_aurea/tasks/${id}`), { done: !currentStatus });
-        window.deleteTask = (id) => { if(confirm("¿Eliminar tarea definitivamente?")) remove(ref(db, `casa_aurea/tasks/${id}`)); };
+        // Utilidades
+        window.switchTab = (tab) => {
+            document.querySelectorAll('main > section').forEach(s => s.classList.add('hidden'));
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('tab-active'));
+            document.getElementById(`tab-${tab}`).classList.add('tab-active');
+            if(tab === 'workload') updateCharts();
+        };
+        window.toggleAdmin = () => {
+            const pass = prompt("Clave Staff:");
+            if (pass === "aurea2026") { window.isAdmin = !window.isAdmin; renderCalendar(); renderWorkload(); renderClients(); }
+        };
+        window.closeModal = () => document.getElementById('taskModal').style.display = 'none';
         window.changeMonth = (dir) => { currentMonth += dir; if (currentMonth < 0) { currentMonth = 11; currentYear--; } if (currentMonth > 11) { currentMonth = 0; currentYear++; } renderCalendar(); };
-        window.switchTab('calendar');
+        window.addClient = () => { const name = document.getElementById('newClientName').value; if (name) { push(ref(db, 'casa_aurea/config/clients'), { name }); document.getElementById('newClientName').value = ''; } };
+        window.deleteClient = (id) => { if(confirm("¿Eliminar?")) remove(ref(db, `casa_aurea/config/clients/${id}`)); };
+        window.toggleTask = (id, cur) => update(ref(db, `casa_aurea/tasks/${id}`), { done: !cur });
     </script>
 </body>
 </html>
